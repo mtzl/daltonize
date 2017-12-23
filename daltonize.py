@@ -1,9 +1,21 @@
 #!/usr/bin/env python
 
 """
-   Written by Joerg Dietrich <astro@joergdietrich.com>. Copyright 2015
-   Based on original code by Oliver Siemoneit. Copyright 2007
-   This code is licensed under the GNU GPL version 2, see COPYING for details.
+Written by Joerg Dietrich <astro@joergdietrich.com>. Copyright 2015
+Based on original code by Oliver Siemoneit. Copyright 2007
+This code is licensed under the GNU GPL version 2, see COPYING for details.
+
+Usage:
+    daltonize.py [-h] [-s | -d] [-t {d,p,t}] input_image output_image
+
+
+optional arguments:
+  -h, --help                show this help message and exit
+  -s, --simulate            create simulated image
+  -d, --daltonize           adjust image color palette for color blindness
+  -t TYPE, --type TYPE      type of color blindness (deuteranopia, protanopia,
+                            tritanopia), default is deuteranopia (most common)
+
 """
 
 from __future__ import print_function, division
@@ -254,7 +266,8 @@ def get_key_colors(mpl_colors, rgb, alpha):
                 rgba = color(np.arange(color.N))
             elif isinstance(color, np.ndarray) and color_key == "array":
                 color = color.reshape(-1, 3) / 255
-                a = np.zeros((color.shape[0], 1))  # pylint: disable=invalid-name
+                a = np.zeros(
+                    (color.shape[0], 1))  # pylint: disable=invalid-name
                 rgba = np.hstack((color, a))
             else:
                 rgba = cc.to_rgba_array(color)
@@ -317,7 +330,7 @@ def _set_colors_from_array(instance, mpl_colors, rgba, i=0):
                     continue
                 color_shape = cc.to_rgba_array(color).shape
                 j = color_shape[0]
-            target_color = rgba[i:i+j, :]
+            target_color = rgba[i:i + j, :]
             if j == 1:
                 target_color = target_color[0]
             i += j
@@ -335,7 +348,7 @@ def _set_colors_from_array(instance, mpl_colors, rgba, i=0):
                 instance.set_markerfacecoloralt(target_color)
             elif color_key == "cmap":
                 instance.set_cmap(
-                    instance.cmap.from_list(instance.cmap.name+"_dlt",
+                    instance.cmap.from_list(instance.cmap.name + "_dlt",
                                             target_color))
             elif color_key == "array":
                 target_color = (target_color.reshape((color.shape[0],
@@ -380,7 +393,8 @@ def _join_rgb_alpha(rgb, alpha):
     Combine (m, n, 3) rgb and (m, n) alpha array into (m, n, 4) rgba.
     """
     rgb = clip_array(rgb, 0, 1)
-    r, g, b = np.split(rgb, 3, 2)  # pylint: disable=invalid-name, unbalanced-tuple-unpacking
+    r, g, b = np.split(
+        rgb, 3, 2)  # pylint: disable=invalid-name, unbalanced-tuple-unpacking
     rgba = np.concatenate((r, g, b, alpha.reshape(alpha.size, 1, 1)),
                           axis=2).reshape(-1, 4)
     return rgba
